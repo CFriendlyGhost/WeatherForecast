@@ -8,7 +8,7 @@ namespace WeatherForecast.Application.Services;
 public class GeoapifyService(HttpClient httpClient, IConfiguration config, ILogger<GeoapifyService> logger) : IGeocodeService
 {
     private readonly string? _apiKey =
-        config["ApiKeys:Geoapify"] ?? Environment.GetEnvironmentVariable("GEOAPIFY_APIKE");
+        config["ApiKeys:Geoapify"] ?? Environment.GetEnvironmentVariable("GEOAPIFY_APIKEY");
     
     private readonly string? _baseUrl = config["ApiUrls:Geoapify"];
 
