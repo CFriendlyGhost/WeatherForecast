@@ -1,4 +1,5 @@
 using WeatherForecast.Application.Interfaces;
+using WeatherForecast.Application.Queries;
 using WeatherForecast.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,7 @@ builder.Services.AddTransient<IGeocodeService, GeoapifyService>();
 builder.Services.AddTransient<IWeatherProvider, WeatherApiProvider>();
 builder.Services.AddTransient<IWeatherProvider, OpenWeatherMapProviderService>();
 builder.Services.AddTransient<IWeatherProvider, OpenMeteoProvider>();
-builder.Services.AddTransient<WeatherService>();
+builder.Services.AddTransient<IGetWeatherQueryHandler, GetWeatherQueryHandler>();
 
 var app = builder.Build();
 
