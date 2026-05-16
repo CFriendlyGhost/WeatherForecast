@@ -9,7 +9,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
-builder.Services.AddApplicationInsightsTelemetry();
+// builder.Services.AddApplicationInsightsTelemetry(); not necessary now, pretty expensive
 
 builder.Services.AddTransient<IGeocodeService, GeoapifyService>();
 builder.Services.AddTransient<IWeatherProvider, WeatherApiProvider>();
