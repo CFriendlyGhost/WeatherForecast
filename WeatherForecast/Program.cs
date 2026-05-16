@@ -19,7 +19,7 @@ builder.Services.AddTransient<WeatherService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+// if (app.Environment.IsDevelopment()) Instead of using postman, can be quickly tested with swagger in development environment
 {
     app.MapOpenApi();
     app.UseSwagger();
