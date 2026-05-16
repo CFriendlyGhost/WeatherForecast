@@ -6,7 +6,7 @@ on:
 env:
   RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
   CONTAINER_APP_NAME: ${{ vars.CONTAINER_APP_NAME }}
-  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/weather-app:latest
+  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/weather-app:${{ github.sha }}
   ApiKeys__Geoapify: ${{ secrets.GEOAPIFY_APIKEY }}
   ApiKeys__OpenWeatherMap: ${{ secrets.OPENWEATHER_APIKEY }}
   ApiKeys__WeatherApi: ${{ secrets.WEATHERAPI_APIKEY }}
