@@ -1,13 +1,15 @@
-using WeatherForecast.Application.Endpoints;
 using WeatherForecast.Application.Interfaces;
 using WeatherForecast.Application.Services;
-using WeatherForecastApp.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
+builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddTransient<IGeocodeService, GeoapifyService>();
 builder.Services.AddTransient<IWeatherProvider, WeatherApiProvider>();
@@ -20,10 +22,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WeatherForecast API v1"));
 }
 
-app.UseHttpsRedirection();
-
-app.MapWeatherEndpoints();
+app.MapControllers();
 
 app.Run();

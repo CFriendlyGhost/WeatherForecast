@@ -4,26 +4,48 @@ using WeatherForecast.Domain.Models;
 
 namespace WeatherForecast.Application.Services;
 
-public class OpenMeteoProvider(HttpClient httpClient, IConfiguration config) : IWeatherProvider
+public class OpenMeteoProvider(HttpClient httpClient, IConfiguration config, ILogger<OpenMeteoProvider> logger) : IWeatherProvider
 {
-    private readonly string _baseUrl = config["ApiUrls:OpenMeteo"] ?? "https://api.open-meteo.com/v1/forecast";
+    private readonly string? _baseUrl = config["ApiUrls:OpenMeteo"];
     public string Name => "Open-Meteo";
 
     public async Task<ProviderForecast?> GetForecastAsync(Location location, DateTime date)
     {
-         var url = $"{_baseUrl}?latitude={location.Latitude}&longitude={location.Longitude}&hourly=temperature_2m";
-         var response = await httpClient.GetAsync(url);
-         if (!response.IsSuccessStatusCode) return null;
+        if (string.IsNullOrWhiteSpace(_baseUrl))
+        {
+            logger.LogError("Base URL is missing for OpenMeteoProvider.");
+            return null;
+        }
 
-         var json = await response.Content.ReadAsStringAsync();
-         var node = JsonNode.Parse(json);
-         var temps = node?["hourly"]?["temperature_2m"]?.AsArray();
-         
-         if (temps != null && temps.Count > 0)
-         {
-             var firstTemp = temps[0]?.GetValue<double>();
-             if (firstTemp.HasValue) return new ProviderForecast(Name, firstTemp.Value);
-         }
-         return null;
+        try
+        {
+             var url = 
+                 $"{_baseUrl}?latitude={location.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}" +
+                 $"&longitude={location.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}" +
+                 $"&hourly=temperature_2m";
+             
+             var response = await httpClient.GetAsync(url);
+             if (!response.IsSuccessStatusCode)
+             {
+                 logger.LogWarning("Open-Meteo returned status code: {StatusCode}", response.StatusCode);
+                 return null;
+             }
+
+             var json = await response.Content.ReadAsStringAsync();
+             var node = JsonNode.Parse(json);
+             var weatherDetails = node?["hourly"]?["temperature_2m"]?.AsArray();
+             
+             if (weatherDetails != null && weatherDetails.Count > 0)
+             {
+                 var firstTemp = weatherDetails[0]?.GetValue<double>();
+                 if (firstTemp.HasValue) return new ProviderForecast(Name, firstTemp.Value);
+             }
+             return null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while fetching forecast from Open-Meteo.");
+            return null;
+        }
     }
 }

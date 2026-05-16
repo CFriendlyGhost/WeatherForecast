@@ -2,6 +2,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
 
+ENV ApiKeys__Geoapify=""
+ENV ApiKeys__OpenWeatherMap=""
+ENV ApiKeys__WeatherApi=""
+ENV APPLICATIONINSIGHTS_CONNECTION_STRING=""
+ENV ASPNETCORE_ENVIRONMENT="Production"
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["WeatherForecast.csproj", "./"]

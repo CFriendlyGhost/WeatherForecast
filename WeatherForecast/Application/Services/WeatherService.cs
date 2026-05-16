@@ -21,10 +21,20 @@ public class WeatherService(
         var location = await geocodeService.GetLocationAsync(city, country);
         if (location == null) return null;
 
-        var tasks = weatherProviders.Select(p => p.GetForecastAsync(location.Value, date));
+        var tasks = weatherProviders
+            .Select(p => p.GetForecastAsync(location.Value, date));
+        
         var results = await Task.WhenAll(tasks);
         
-        var validForecasts = results.Where(r => r != null).Select(r => r!.Value).ToList();
+        var validForecasts = results
+            .Where(r => r != null)
+            .Select(r => r!.Value)
+            .ToList();
+
+        if (validForecasts.Count == 0)
+        {
+            return null;
+        }
 
         var finalResult = new WeatherResult(city, country, date, validForecasts);
         
