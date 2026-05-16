@@ -47,6 +47,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate deploy configuration
+        run: |
+          missing=0
+
+          if [ -z "$RESOURCE_GROUP" ]; then
+            echo "Error: RESOURCE_GROUP is not set."
+            missing=1
+          fi
+
+          if [ -z "$CONTAINER_APP_NAME" ]; then
+            echo "Error: CONTAINER_APP_NAME is not set."
+            missing=1
+          fi
+
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
       - name: Azure login
         uses: Azure/login@v1
         with:
