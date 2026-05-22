@@ -17,7 +17,7 @@ jobs:
     env:
       TF_VAR_resource_group_name: ${{ vars.RESOURCE_GROUP }}
       TF_VAR_container_app_name: ${{ vars.CONTAINER_APP_NAME }}
-      TF_VAR_location: ${{ vars.LOCATIONS }}
+      TF_VAR_location: ${{ vars.LOCATION }}
       TF_VAR_docker_image: "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
       
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
