@@ -63,14 +63,23 @@ The app uses the following external services:
 
 The repository contains a `Dockerfile` for building the API image.
 
+## Infrastructure defined in terraforms
+
+The infrastructure is fully automated using Terraform. It creates the following Azure resources:
+- Azure Resource Group
+- Azure Container App Environment
+- Azure Container App (with default placeholder image)
+
 ## CI/CD and deployment
 
-The repository contains a GitHub Actions workflow:
+The repository contains two fully automated GitHub Actions workflows:
 
-- `.github/workflows/azure-container-app.yml`
+### 1. `deploy-infra.yml` (Terraform)
+Sets up the base cloud resources.
+- Triggered manually or push to main modifying the `terraform/` folder.
 
-What it does:
-
+### 2. `azure-container-app.yml` (App Deployment)
+- Triggered manually (`workflow_dispatch`).
 1. Builds the Docker image from `./WeatherForecast`
 2. Pushes the image to Docker Hub
-3. Deploys/updates the image in **Azure Container Apps**
+3. Deploys/updates the image in **Azure Container Apps** and injects secrets as Environmental Variables.
