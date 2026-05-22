@@ -1,5 +1,5 @@
 ﻿# WeatherForecast
-Can be found under the link: https://weather-app.mangobush-39b0e5b2.westeurope.azurecontainerapps.io/swagger/index.html
+Can be found under the link: https://weather-app.yellowmushroom-2b27773e.northeurope.azurecontainerapps.io/swagger/index.html
 Dockerized .NET 10 Web API that returns weather forecasts for a given **city**, **country** and **date**.
 
 The service aggregates results from free providers and caches responses to reduce external API calls.
