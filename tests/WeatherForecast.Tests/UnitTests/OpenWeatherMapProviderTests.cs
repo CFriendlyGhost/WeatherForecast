@@ -16,7 +16,10 @@ public class OpenWeatherMapProviderTests
     {
         var json = JsonSerializer.Serialize(new
         {
-            list = new[] { new { main = new { temp = 15.2 } } }
+            list = new[] { 
+                new { main = new { temp = 10.0 } },
+                new { main = new { temp = 20.0 } }
+            }
         });
         var client = HttpClientTestHelper.CreateClient(_ => new HttpResponseMessage(System.Net.HttpStatusCode.OK)
         {
@@ -36,7 +39,6 @@ public class OpenWeatherMapProviderTests
 
         forecast.HasValue.Should().BeTrue();
         forecast!.Value.ProviderName.Should().Be("OpenWeatherMap");
-        forecast.Value.TemperatureC.Should().Be(15.2);
+        forecast.Value.TemperatureC.Should().Be(15.0);
     }
 }
-

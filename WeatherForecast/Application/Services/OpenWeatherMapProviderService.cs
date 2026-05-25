@@ -29,7 +29,9 @@ public class OpenWeatherMapProviderService(HttpClient httpClient, IConfiguration
 
         try
         {
-            var url = $"{_baseUrl}?lat={location.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}&lon={location.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}&units=metric&appid={_apiKey}";
+            var url = $"{_baseUrl}?lat={location.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}" +
+                      $"&lon={location.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}&units=metric&appid={_apiKey}";
+            
             var response = await httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
@@ -39,14 +41,39 @@ public class OpenWeatherMapProviderService(HttpClient httpClient, IConfiguration
 
             var json = await response.Content.ReadAsStringAsync();
             var node = JsonNode.Parse(json);
-            var weatherDetail = node?["list"]?[0]?["main"]?["temp"]?.GetValue<double>();
-             
-            return weatherDetail.HasValue ? new ProviderForecast(Name, weatherDetail.Value) : null;
+            var list = node?["list"]?.AsArray();
+            
+            return CalculateAverageForecast(Name, list);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while fetching forecast from OpenWeatherMap.");
             return null;
         }
+    }
+
+    private static ProviderForecast? CalculateAverageForecast(string providerName, JsonArray? list)
+    {
+        if (list == null || list.Count == 0)
+        {
+            return null;
+        }
+
+        double sum = 0;
+        var count = 0;
+        
+        foreach (var item in list)
+        {
+            var temp = item?["main"]?["temp"]?.GetValue<double>();
+            if (temp.HasValue)
+            {
+                sum += temp.Value;
+                count++;
+            }
+        }
+        
+        return count > 0 
+            ? new ProviderForecast(providerName, Math.Round(sum / count, 2)) 
+            : null;
     }
 }

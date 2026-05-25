@@ -11,7 +11,7 @@ namespace WeatherForecast.Tests.UnitTests;
 
 public class OpenMeteoProviderTests
 {
-    private static readonly double[] Value = [7.5];
+    private static readonly double[] Value = [5.0, 10.0, 15.0];
 
     [Fact]
     public async Task GetForecastAsync_ReturnsForecast_WhenApiReturnsValues()
@@ -34,7 +34,7 @@ public class OpenMeteoProviderTests
 
         forecast.HasValue.Should().BeTrue();
         forecast!.Value.ProviderName.Should().Be("Open-Meteo");
-        forecast.Value.TemperatureC.Should().Be(7.5);
+        forecast.Value.TemperatureC.Should().Be(10.0);
     }
 }
 

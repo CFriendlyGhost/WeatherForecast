@@ -35,17 +35,37 @@ public class OpenMeteoProvider(HttpClient httpClient, IConfiguration config, ILo
              var node = JsonNode.Parse(json);
              var weatherDetails = node?["hourly"]?["temperature_2m"]?.AsArray();
              
-             if (weatherDetails != null && weatherDetails.Count > 0)
-             {
-                 var firstTemp = weatherDetails[0]?.GetValue<double>();
-                 if (firstTemp.HasValue) return new ProviderForecast(Name, firstTemp.Value);
-             }
-             return null;
+             return CalculateAverageForecast(Name, weatherDetails);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "An error occurred while fetching forecast from Open-Meteo.");
             return null;
         }
+    }
+
+    private static ProviderForecast? CalculateAverageForecast(string providerName, JsonArray? weatherDetails)
+    {
+        if (weatherDetails == null || weatherDetails.Count == 0)
+        {
+            return null;
+        }
+
+        double sum = 0;
+        var count = 0;
+        
+        foreach (var item in weatherDetails)
+        {
+            var temp = item?.GetValue<double>();
+            if (temp.HasValue)
+            {
+                sum += temp.Value;
+                count++;
+            }
+        }
+        
+        return count > 0 
+            ? new ProviderForecast(providerName, Math.Round(sum / count, 2)) 
+            : null;
     }
 }
